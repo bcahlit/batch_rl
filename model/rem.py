@@ -22,7 +22,9 @@ class REM_DQN(DQN):
                 fc1 = tf.contrib.layers.fully_connected(conv3_flatten, 512)
                 out = tf.contrib.layers.fully_connected(fc1, self.num_actions * self.num_heads, activation_fn=None)
         
+        # reduce_mean 数用于计算张量tensor沿着指定的数轴（tensor的某一维度）上的的平均值，主要用作降维或者计算tensor（图像）的平均值。
         out = tf.reshape(out, (tf.shape(out)[0], self.num_actions, self.num_heads))
+        # 这个random_coeff 就是对多个q进行分权加和的作用。这也是借鉴集成学习和dropout的地方
         out_rem = out*tf.reshape(random_coeff, [1,1,-1])
         greedy_idx = tf.argmax(tf.reduce_mean(out, axis = 2), axis = 1)
         
